@@ -1,8 +1,7 @@
-import java.io.IOException;
 import java.util.Random;
 import java.util.Scanner;
 
-public class Main {
+public class RandomMain {
     public static int[] states = {0, 1, 2, 3};
     public static String[] stringstates = {"гангает", "гангает", "мертв", "фармит"};
 
@@ -13,7 +12,7 @@ public class Main {
 3) закуп*/
 
     public static String[] outsignals = {"Возвращаюсь на линию", "иду помогать",
-                                        "я в таверне","закупаюсь", "иду забирать обьект"};
+            "я в таверне","закупаюсь", "иду забирать обьект"};
 
 /*выходные сигналы:
 0) "возвращаюсь на линию"
@@ -47,12 +46,28 @@ public class Main {
     };
 
     //таблица распределения вероятностей для смены состояния
-    /* public static double[][] chanceForChange = {
-            {0, 0.3, 0.7, 1},
-            {0, 0.3, 0.7, 1},
-            {0, 0.3, 0.7, 1},
-            {0, 0.3, 0.7, 1}
-    };*/
+    static double[][][] Table3 = {{
+            {0.1, 0.3, 0.7, 1},//Гангаем
+            {0.1, 0.3, 0.7, 1},
+            {0.1, 0.3, 0.7, 1},
+            {0.1, 0.3, 0.7, 1}},
+
+            {{0.1, 0.3, 0.7, 1},//Фармим
+                    {0.1, 0.3, 0.7, 1},
+                    {0.1, 0.3, 0.7, 1},
+                    {0.1, 0.3, 0.7, 1}},
+
+            {{0, 0, 1, 0},//Мертв
+                    {0, 0, 1, 0},
+                    {0, 0, 1, 0},
+                    {0, 0, 1, 0}},
+
+            {{0.1, 0.3, 0.7, 1},//Закуп
+                    {0.1, 0.3, 0.7, 1},
+                    {0.1, 0.3, 0.7, 1},
+                    {0.1, 0.3, 0.7, 1}
+            }};
+
 
     public static int currState;
     public static boolean work;
@@ -60,8 +75,6 @@ public class Main {
 
     public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
-        Random rand = new Random(System.nanoTime());
-        double randomCh; //++
         System.out.println("Выберете изначальное состояние: \n" +
                 "0) гангает\n" +
                 "1) фармит\n" +
@@ -90,8 +103,22 @@ public class Main {
 
     // сделать так, чтобы при вводе входного, менялся currState и выводило текущее, действие и новое состояние*
     public static void changeState(int signal){
+        Random random= new Random(System.nanoTime());
+        double probability;
+
+
         System.out.println("текущее состояние = " + currState);
         System.out.println("действие = " + actions[signal]);
+
+        probability = random.nextDouble(0.0,1.0);
+        for( int i=0; i<=Table3.length; i++) {
+            if (probability <= Table3[currState][signal][i]) {
+                currState = i;
+                currState = firstTable[signal][currState];
+                break;
+            }
+        }
+
         if (firstTable[signal][currState] == -1){
             System.out.println("новое состояние = " + currState + " (действие не влияет)");
         } else {
@@ -99,7 +126,7 @@ public class Main {
             //стринг значение нового состояния
         }
         System.out.println("сообщение: "+ secondTable[signal][currState]);
-        currState = firstTable[signal][currState];
+
     }
 
 
